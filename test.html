@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Настройки</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.3/nouislider.min.css">
+    
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -45,14 +47,14 @@
     <div class="block">
         <h2>Депозит</h2>
         <div class="slider-container">
-    <input type="range" id="depositRange" min="10000" max="1000000" step="1" value="10000,1000000">
-    <div class="range-values">
-        <span id="minValue">10000</span>
-        <span id="maxValue">1000000</span>
+            <div id="depositRange"></div>
+            <div class="range-values">
+                <span id="minValue">10000</span>
+                <span id="maxValue">1000000</span>
+            </div>
+        </div>
     </div>
-</div>
 
-    </div>
     
     <div class="block">
         <h2>Платежные методы</h2>
@@ -106,28 +108,34 @@
             <button class="button" id="daiButton">DAI</button>
         </div>
     </div>
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.3/nouislider.min.js"></script>
     <script>
-    // Депозит
-    const depositRange = document.getElementById('depositRange');
-    const minValue = document.getElementById('minValue');
-    const maxValue = document.getElementById('maxValue');
+        // Депозит
+        const depositRange = document.getElementById('depositRange');
+        const minValue = document.getElementById('minValue');
+        const maxValue = document.getElementById('maxValue');
 
-    depositRange.addEventListener('input', () => {
-        const min = parseInt(depositRange.value.split(',')[0]);
-        const max = parseInt(depositRange.value.split(',')[1]);
+        noUiSlider.create(depositRange, {
+            start: [10000, 1000000],
+            connect: true,
+            range: {
+                'min': 10000,
+                'max': 1000000
+            }
+        });
 
-        minValue.textContent = min;
-        maxValue.textContent = max;
-    });
+        depositRange.noUiSlider.on('update', (values) => {
+            minValue.textContent = Math.floor(values[0]);
+            maxValue.textContent = Math.floor(values[1]);
+        });
 
-    depositRange.addEventListener('change', () => {
-        const min = parseInt(depositRange.value.split(',')[0]);
-        const max = parseInt(depositRange.value.split(',')[1]);
+        depositRange.noUiSlider.on('change', (values) => {
+            const min = Math.floor(values[0]);
+            const max = Math.floor(values[1]);
 
-        // Здесь вы можете использовать полученные значения min и max для дальнейшей обработки, например, отправки через API
-    });
-</script>
+            // Здесь вы можете использовать полученные значения min и max для дальнейшей обработки, например, отправки через API
+        });
+    </script>
 
         
         // Платежные методы
