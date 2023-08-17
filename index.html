@@ -8,13 +8,6 @@
     <meta name="robots" content="noindex,nofollow" />
     
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-     <script>
-        function setThemeClass() {
-            document.documentElement.className = Telegram.WebApp.colorScheme;
-        }
-        Telegram.WebApp.onEvent('themeChanged', setThemeClass);
-        setThemeClass();
-    </script>
     <title>Настройки</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@200;500&display=swap'); 
@@ -43,7 +36,7 @@
       .button{
           border: 0;
         border-radius: 5px; margin-top: 50px; height: 60px;
-        width: 200px;
+        width: 100%;
         font-size: 20px;
         font-weight: 500; cursor: pointer;
         transition: all 500ms ease;
@@ -64,16 +57,14 @@
     <button onclick="sendMessage()">Сохранить настройки</button>
     </div>  
     
-    <script>
-        let tg = window.Telegram.WebApp; //получаем объект webapp телеграма 
-
-         tg.expand(); //расширяем на все окно  
-         tg.MainButton.text = "Сохранить"; //изменяем текст кнопки  
-   tg.MainButton.textColor = "#F55353"; //изменяем цвет текста кнопки
-   tg.MainButton.color = "#143F6B";
-        tg.MainButton.show()
-        Telegram.WebApp.onEvent('mainButtonClicked', function(){
-            alert("Сообщение отправлено!3");}
+    <script> 
+        let tg = window.Telegram.WebApp;
+        function setThemeClass() {
+            document.documentElement.className = Telegram.WebApp.colorScheme;
+        }
+        Telegram.WebApp.onEvent('themeChanged', setThemeClass);
+        setThemeClass();
+        
         function sendMessage() {
             // Здесь можно добавить логику отправки сообщения через API вашего телеграм бота
             alert("Сообщение отправлено!3");
