@@ -45,12 +45,13 @@
     <div class="block">
         <h2>Депозит</h2>
         <div class="slider-container">
-            <input type="range" id="depositRange" min="10000" max="1000000">
-            <div class="range-values">
-                <span id="minValue">10000</span>
-                <span id="maxValue">1000000</span>
-            </div>
-        </div>
+    <input type="range" id="depositRange" min="10000" max="1000000" step="1" value="10000,1000000">
+    <div class="range-values">
+        <span id="minValue">10000</span>
+        <span id="maxValue">1000000</span>
+    </div>
+</div>
+
     </div>
     
     <div class="block">
@@ -107,15 +108,27 @@
     </div>
     
     <script>
-        // Депозит
-        const depositRange = document.getElementById('depositRange');
-        const minValue = document.getElementById('minValue');
-        const maxValue = document.getElementById('maxValue');
-        
-        depositRange.addEventListener('input', () => {
-            minValue.textContent = depositRange.value;
-            maxValue.textContent = depositRange.max;
-        });
+    // Депозит
+    const depositRange = document.getElementById('depositRange');
+    const minValue = document.getElementById('minValue');
+    const maxValue = document.getElementById('maxValue');
+
+    depositRange.addEventListener('input', () => {
+        const min = parseInt(depositRange.value.split(',')[0]);
+        const max = parseInt(depositRange.value.split(',')[1]);
+
+        minValue.textContent = min;
+        maxValue.textContent = max;
+    });
+
+    depositRange.addEventListener('change', () => {
+        const min = parseInt(depositRange.value.split(',')[0]);
+        const max = parseInt(depositRange.value.split(',')[1]);
+
+        // Здесь вы можете использовать полученные значения min и max для дальнейшей обработки, например, отправки через API
+    });
+</script>
+
         
         // Платежные методы
         const sberButton = document.getElementById('sberButton');
