@@ -66,7 +66,15 @@
     
     <button onclick="sendMessage()">Сохранить настройки</button>
     </div>  
+    
     <script>
+        let tg = window.Telegram.WebApp; //получаем объект webapp телеграма 
+
+         tg.expand(); //расширяем на все окно  
+         tg.MainButton.text = "Changed Text"; //изменяем текст кнопки 
+        tg.MainButton.setText("Changed Text1"); //изменяем текст кнопки иначе
+   tg.MainButton.textColor = "#F55353"; //изменяем цвет текста кнопки
+   tg.MainButton.color = "#143F6B";
         function sendMessage() {
             // Здесь можно добавить логику отправки сообщения через API вашего телеграм бота
             alert("Сообщение отправлено!3");
