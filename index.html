@@ -8,6 +8,13 @@
     <meta name="robots" content="noindex,nofollow" />
     
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+     <script>
+        function setThemeClass() {
+            document.documentElement.className = Telegram.WebApp.colorScheme;
+        }
+        Telegram.WebApp.onEvent('themeChanged', setThemeClass);
+        setThemeClass();
+    </script>
     <title>Настройки</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@200;500&display=swap'); 
