@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Настройки</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .block {
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+        }
+        .buttons-container {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .button {
+            padding: 8px 16px;
+            border: none;
+            cursor: pointer;
+        }
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        input[type="range"] {
+            width: 100%;
+        }
+        .range-values {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Настройки</h1>
+    
+    <div class="block">
+        <h2>Депозит</h2>
+        <div class="slider-container">
+            <input type="range" id="depositRange" min="10000" max="1000000">
+            <div class="range-values">
+                <span id="minValue">10000</span>
+                <span id="maxValue">1000000</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="block">
+        <h2>Платежные методы</h2>
+        <div class="buttons-container">
+            <button class="button" id="sberButton">Сбер</button>
+            <button class="button" id="tinkButton">Тиньк</button>
+            <button class="button" id="alfaButton">Альфа</button>
+            <button class="button" id="raifButton">Райф</button>
+        </div>
+    </div>
+    
+    <div class="block">
+        <h2>Биржи</h2>
+        <div class="buttons-container">
+            <div>
+                <button class="button" id="binanceButton">Бинанс</button>
+                <div class="buttons-container">
+                    <button class="button" id="binanceMButton">М</button>
+                    <button class="button" id="binanceTButton">Т</button>
+                </div>
+            </div>
+            <div>
+                <button class="button" id="huobiButton">Хуоби</button>
+                <div class="buttons-container">
+                    <button class="button" id="huobiMButton">М</button>
+                    <button class="button" id="huobiTButton">Т</button>
+                </div>
+            </div>
+            <div>
+                <button class="button" id="baybitButton">Байбит</button>
+                <div class="buttons-container">
+                    <button class="button" id="baybitMButton">М</button>
+                    <button class="button" id="baybitTButton">Т</button>
+                </div>
+            </div>
+            <div>
+                <button class="button" id="garantexButton">Гарантекс</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="block">
+        <h2>Криптовалюты</h2>
+        <div class="buttons-container">
+            <button class="button" id="btcButton">BTC</button>
+            <button class="button" id="usdtButton">USDT</button>
+            <button class="button" id="busdButton">BUSD</button>
+            <button class="button" id="bnbButton">BNB</button>
+            <button class="button" id="ethButton">ETH</button>
+            <button class="button" id="usdcButton">USDC</button>
+            <button class="button" id="daiButton">DAI</button>
+        </div>
+    </div>
+    
+    <script>
+        // Депозит
+        const depositRange = document.getElementById('depositRange');
+        const minValue = document.getElementById('minValue');
+        const maxValue = document.getElementById('maxValue');
+        
+        depositRange.addEventListener('input', () => {
+            minValue.textContent = depositRange.value;
+            maxValue.textContent = depositRange.max;
+        });
+        
+        // Платежные методы
+        const sberButton = document.getElementById('sberButton');
+        const tinkButton = document.getElementById('tinkButton');
+        const alfaButton = document.getElementById('alfaButton');
+        const raifButton = document.getElementById('raifButton');
+        
+        function toggleButton(button) {
+            button.classList.toggle('active');
+        }
+        
+        sberButton.addEventListener('click', () => toggleButton(sberButton));
+        tinkButton.addEventListener('click', () => toggleButton(tinkButton));
+        alfaButton.addEventListener('click', () => toggleButton(alfaButton));
+        raifButton.addEventListener('click', () => toggleButton(raifButton));
+        
+        // Биржи
+        const binanceButton = document.getElementById('binanceButton');
+        const huobiButton = document.getElementById('huobiButton');
+        const baybitButton = document.getElementById('baybitButton');
+        const garantexButton = document.getElementById('garantexButton');
+        
+        const binanceMButton = document.getElementById('binanceMButton');
+        const binanceTButton = document.getElementById('binanceTButton');
+        const huobiMButton = document.getElementById('huobiMButton');
+        const huobiTButton = document.getElementById('huobiTButton');
+        const baybitMButton = document.getElementById('baybitMButton');
+        const baybitTButton = document.getElementById('baybitTButton');
+        
+        binanceButton.addEventListener('click', () => toggleButton(binanceButton));
+        huobiButton.addEventListener('click', () => toggleButton(huobiButton));
+        baybitButton.addEventListener('click', () => toggleButton(baybitButton));
+        garantexButton.addEventListener('click', () => toggleButton(garantexButton));
+        
+        binanceMButton.addEventListener('click', () => toggleButton(binanceMButton));
+        binanceTButton.addEventListener('click', () => toggleButton(binanceTButton));
+        huobiMButton.addEventListener('click', () => toggleButton(huobiMButton));
+        huobiTButton.addEventListener('click', () => toggleButton(huobiTButton));
+        baybitMButton.addEventListener('click', () => toggleButton(baybitMButton));
+        baybitTButton.addEventListener('click', () => toggleButton(baybitTButton));
+        
+        // Криптовалюты
+        const btcButton = document.getElementById('btcButton');
+        const usdtButton = document.getElementById('usdtButton');
+        const busdButton = document.getElementById('busdButton');
+        const bnbButton = document.getElementById('bnbButton');
+        const ethButton = document.getElementById('ethButton');
+        const usdcButton = document.getElementById('usdcButton');
+        const daiButton = document.getElementById('daiButton');
+        
+        btcButton.addEventListener('click', () => toggleButton(btcButton));
+        usdtButton.addEventListener('click', () => toggleButton(usdtButton));
+        busdButton.addEventListener('click', () => toggleButton(busdButton));
+        bnbButton.addEventListener('click', () => toggleButton(bnbButton));
+        ethButton.addEventListener('click', () => toggleButton(ethButton));
+        usdcButton.addEventListener('click', () => toggleButton(usdcButton));
+        daiButton.addEventListener('click', () => toggleButton(daiButton));
+    </script>
+</body>
+</html>
