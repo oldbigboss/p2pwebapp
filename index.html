@@ -8,6 +8,21 @@
     <meta name="robots" content="noindex,nofollow" />
     
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+  $( function() {
+    $( "#slider-range" ).slider({
+      range: true,
+      min: 5000,
+      max: 1000000,
+      values: [ 350000, 400000 ],
+      slide: function( event, ui ) {
+        $( "#amount" ).val( "₽" + ui.values[ 0 ] + " - $" + ui.values[ 1 ] );
+      }
+    });
+    $( "#amount" ).val( "₽" + $( "#slider-range" ).slider( "values", 0 ) +
+      " - ₽" + $( "#slider-range" ).slider( "values", 1 ) );
+  } );
+  </script>
     <title>Настройки</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@200;500&display=swap'); 
@@ -49,10 +64,14 @@
 <body>
     <div id="main">
     <h1>Настройки</h1>
-    <p>Депозит</p> 
-    <p>Платежные методы</p>
-    <p>Биржи</p>
-    <p>Криптовалюты</p>
+    <h2><label for="amount">Депозит:</label>
+  <input type="text" id="amount" readonly">
+    </h2> 
+    
+<div id="slider-range"></div>
+    <h2>Платежные методы</h2>
+    <h2>Биржи</h2>
+    <h2>Криптовалюты</h2>
     
     <button onclick="sendMessage()">Сохранить настройки</button>
     </div>  
