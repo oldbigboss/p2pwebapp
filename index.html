@@ -232,7 +232,7 @@ function syncMainButton(mainButton, childMButton, childTButton) {
         mainButton.classList.remove('active');
     }
 }
-
+garantexButton.addEventListener('click', () => toggleButton(garantexButton));
 binanceButton.addEventListener('click', () => {
     toggleButton(binanceButton);
     syncChildButtons(binanceButton, binanceMButton, binanceTButton);
