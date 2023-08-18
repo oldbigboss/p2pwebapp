@@ -235,7 +235,16 @@
         usdcButton.addEventListener('click', () => toggleButton(usdcButton));
         daiButton.addEventListener('click', () => toggleButton(daiButton));
         
+        // отправка
+        window.Telegram.WebApp.MainButton.onClick(saveNclose())
         
+        function saveNclose() {
+        data = {
+            arb_range:[window.minV,window.maxV],
+            paytypes:[0,1,2]
+        }
+        sendData(JSON.stringify(data)); 
+    }
     </script>
 </body>
 </html>
