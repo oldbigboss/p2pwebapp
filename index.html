@@ -45,8 +45,11 @@
             border-radius: 4px;
             cursor: pointer;
             transition: all 500ms ease;
-            background: var(--tg-theme-button-color);
+            background: var(--tg-theme-secondary-bg-color);
             color: var(--tg-theme-button-text-color);
+        }
+        .button.active{
+        background: var(--tg-theme-button-color);
         }
         .slider-container {
             margin-top: 5px;
@@ -167,8 +170,8 @@
         minValue.textContent = formatNumber(min) + '₽';
         maxValue.textContent = formatNumber(max) + '₽';
     });
-    let minV = 0;
-    let maxV = 0;
+    let minV = 10000;
+    let maxV = 750000;
     depositRange.noUiSlider.on('change', (values) => {
         const min = Math.floor(values[0]);
         const max = Math.floor(values[1]);
