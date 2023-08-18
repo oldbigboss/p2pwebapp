@@ -23,6 +23,7 @@
             padding: 10px; 
             border: 0px; 
             background: var(--tg-theme-secondary-bg-color)
+            border-radius: 4px;
         }
         .h1 {
             margin: 5px;
@@ -128,32 +129,41 @@
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.3/nouislider.min.js"></script>
     <script>
-        // Депозит
-        const depositRange = document.getElementById('depositRange');
-        const minValue = document.getElementById('minValue');
-        const maxValue = document.getElementById('maxValue');
+    // Депозит
+    const depositRange = document.getElementById('depositRange');
+    const minValue = document.getElementById('minValue');
+    const maxValue = document.getElementById('maxValue');
 
-        noUiSlider.create(depositRange, {
-            start: [10000, 1000000],
-            connect: true,
-            range: {
-                'min': 10000,
-                'max': 1000000
-            },
-            step: 1000
-        });
+    noUiSlider.create(depositRange, {
+        start: [10000, 1000000],
+        connect: true,
+        range: {
+            'min': 10000,
+            'max': 1000000
+        },
+        step: 1000
+    });
 
-        depositRange.noUiSlider.on('update', (values) => {
-            minValue.textContent = Math.floor(values[0]);
-            maxValue.textContent = Math.floor(values[1]);
-        });
+    function formatNumber(number) {
+        return new Intl.NumberFormat('ru-RU').format(number);
+    }
 
-        depositRange.noUiSlider.on('change', (values) => {
-            const min = Math.floor(values[0]);
-            const max = Math.floor(values[1]);
+    depositRange.noUiSlider.on('update', (values) => {
+        const min = Math.floor(values[0]);
+        const max = Math.floor(values[1]);
 
-            // Здесь вы можете использовать полученные значения min и max для дальнейшей обработки, например, отправки через API
-        }); 
+        minValue.textContent = formatNumber(min) + '₽';
+        maxValue.textContent = formatNumber(max) + '₽';
+    });
+
+    depositRange.noUiSlider.on('change', (values) => {
+        const min = Math.floor(values[0]);
+        const max = Math.floor(values[1]);
+
+        // Здесь вы можете использовать полученные значения min и max для дальнейшей обработки, например, отправки через API
+    });
+</script>
+
 
         
         // Платежные методы
