@@ -170,8 +170,8 @@
     let minV = 0;
     let maxV = 0;
     depositRange.noUiSlider.on('change', (values) => {
-        let minV = Math.floor(values[0]);
-        let maxV = Math.floor(values[1]);
+        minV = Math.floor(values[0]);
+        maxV = Math.floor(values[1]);
 
         // Здесь вы можете использовать полученные значения min и max для дальнейшей обработки, например, отправки через API
     }); 
