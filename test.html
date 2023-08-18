@@ -196,30 +196,87 @@
         alfaButton.addEventListener('click', () => toggleButton(alfaButton));
         raifButton.addEventListener('click', () => toggleButton(raifButton));
         
+         
         // Биржи
-        const binanceButton = document.getElementById('binanceButton');
-        const huobiButton = document.getElementById('huobiButton');
-        const baybitButton = document.getElementById('baybitButton');
-        const garantexButton = document.getElementById('garantexButton');
-        
-        const binanceMButton = document.getElementById('binanceMButton');
-        const binanceTButton = document.getElementById('binanceTButton');
-        const huobiMButton = document.getElementById('huobiMButton');
-        const huobiTButton = document.getElementById('huobiTButton');
-        const baybitMButton = document.getElementById('baybitMButton');
-        const baybitTButton = document.getElementById('baybitTButton');
-        
-        binanceButton.addEventListener('click', () => toggleButton(binanceButton));
-        huobiButton.addEventListener('click', () => toggleButton(huobiButton));
-        baybitButton.addEventListener('click', () => toggleButton(baybitButton));
-        garantexButton.addEventListener('click', () => toggleButton(garantexButton));
-        
-        binanceMButton.addEventListener('click', () => toggleButton(binanceMButton));
-        binanceTButton.addEventListener('click', () => toggleButton(binanceTButton));
-        huobiMButton.addEventListener('click', () => toggleButton(huobiMButton));
-        huobiTButton.addEventListener('click', () => toggleButton(huobiTButton));
-        baybitMButton.addEventListener('click', () => toggleButton(baybitMButton));
-        baybitTButton.addEventListener('click', () => toggleButton(baybitTButton));
+const binanceButton = document.getElementById('binanceButton');
+const huobiButton = document.getElementById('huobiButton');
+const baybitButton = document.getElementById('baybitButton');
+const garantexButton = document.getElementById('garantexButton');
+
+const binanceMButton = document.getElementById('binanceMButton');
+const binanceTButton = document.getElementById('binanceTButton');
+const huobiMButton = document.getElementById('huobiMButton');
+const huobiTButton = document.getElementById('huobiTButton');
+const baybitMButton = document.getElementById('baybitMButton');
+const baybitTButton = document.getElementById('baybitTButton');
+
+function toggleButton(button) {
+    button.classList.toggle('active');
+}
+
+function syncChildButtons(mainButton, childMButton, childTButton) {
+    if (mainButton.classList.contains('active')) {
+        childMButton.classList.add('active');
+        childTButton.classList.add('active');
+    } else {
+        childMButton.classList.remove('active');
+        childTButton.classList.remove('active');
+    }
+}
+
+function syncMainButton(mainButton, childMButton, childTButton) {
+    if (childMButton.classList.contains('active') || childTButton.classList.contains('active')) {
+        mainButton.classList.add('active');
+    } else {
+        mainButton.classList.remove('active');
+    }
+}
+
+binanceButton.addEventListener('click', () => {
+    toggleButton(binanceButton);
+    syncChildButtons(binanceButton, binanceMButton, binanceTButton);
+});
+
+huobiButton.addEventListener('click', () => {
+    toggleButton(huobiButton);
+    syncChildButtons(huobiButton, huobiMButton, huobiTButton);
+});
+
+baybitButton.addEventListener('click', () => {
+    toggleButton(baybitButton);
+    syncChildButtons(baybitButton, baybitMButton, baybitTButton);
+});
+
+binanceMButton.addEventListener('click', () => {
+    toggleButton(binanceMButton);
+    syncMainButton(binanceButton, binanceMButton, binanceTButton);
+});
+
+binanceTButton.addEventListener('click', () => {
+    toggleButton(binanceTButton);
+    syncMainButton(binanceButton, binanceMButton, binanceTButton);
+});
+
+huobiMButton.addEventListener('click', () => {
+    toggleButton(huobiMButton);
+    syncMainButton(huobiButton, huobiMButton, huobiTButton);
+});
+
+huobiTButton.addEventListener('click', () => {
+    toggleButton(huobiTButton);
+    syncMainButton(huobiButton, huobiMButton, huobiTButton);
+});
+
+baybitMButton.addEventListener('click', () => {
+    toggleButton(baybitMButton);
+    syncMainButton(baybitButton, baybitMButton, baybitTButton);
+});
+
+baybitTButton.addEventListener('click', () => {
+    toggleButton(baybitTButton);
+    syncMainButton(baybitButton, baybitMButton, baybitTButton);
+});
+
         
         // Криптовалюты
         const btcButton = document.getElementById('btcButton');
