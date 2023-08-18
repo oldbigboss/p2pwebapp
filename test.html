@@ -293,8 +293,7 @@ baybitTButton.addEventListener('click', () => {
         usdcButton.addEventListener('click', () => toggleButton(usdcButton));
         daiButton.addEventListener('click', () => toggleButton(daiButton));
         
-        // отправка
-        window.Telegram.WebApp.onEvent('mainButtonClicked', saveNclose);
+        // отправка 
         
         function saveNclose() {
     const data = {
@@ -307,6 +306,7 @@ baybitTButton.addEventListener('click', () => {
     sendDataToBot(data);
     closeWebApp();
 }
+window.Telegram.WebApp.onEvent('mainButtonClicked', saveNclose);
 
 function getArbRangeValues() {
     const min = Math.floor(depositRange.noUiSlider.get()[0]);
