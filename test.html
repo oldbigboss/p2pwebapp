@@ -236,7 +236,7 @@
         daiButton.addEventListener('click', () => toggleButton(daiButton));
         
         // отправка
-        window.Telegram.WebApp.MainButton.onClick(saveNclose());
+        window.Telegram.WebApp.onEvent('mainButtonClicked', saveNclose());
         
         function saveNclose() {
         data = {
