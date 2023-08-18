@@ -138,6 +138,8 @@
     window.Telegram.WebApp.MainButton.text = "Сохранить"
     window.Telegram.WebApp.expand()
     window.Telegram.WebApp.MainButton.show()
+     window.Telegram.WebApp.MainButton.onClick(saveNclose())
+        
         
     // Депозит
     const depositRange = document.getElementById('depositRange');
@@ -153,11 +155,11 @@
         },
         step: 1000
     });
-
+    
     function formatNumber(number) {
         return new Intl.NumberFormat('ru-RU').format(number);
     }
-
+    
     depositRange.noUiSlider.on('update', (values) => {
         const min = Math.floor(values[0]);
         const max = Math.floor(values[1]);
@@ -165,14 +167,21 @@
         minValue.textContent = formatNumber(min) + '₽';
         maxValue.textContent = formatNumber(max) + '₽';
     });
-
+    let minV = 0;
+    let maxV = 0;
     depositRange.noUiSlider.on('change', (values) => {
-        const min = Math.floor(values[0]);
-        const max = Math.floor(values[1]);
+        let minV = Math.floor(values[0]);
+        let maxV = Math.floor(values[1]);
 
         // Здесь вы можете использовать полученные значения min и max для дальнейшей обработки, например, отправки через API
     }); 
-
+    function saveNclose() {
+        data = {
+            arb_range:[minV,maxV],
+            paytypes:[0,1,2]
+        }
+        sendData(JSON.stringify(data)); 
+    }
 
         
         // Платежные методы
