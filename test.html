@@ -173,8 +173,8 @@
     depositRange.noUiSlider.on('change', (values) => {
         const min = Math.floor(values[0]);
         const max = Math.floor(values[1]);
-        window.minv = min;
-        window.maxV = max
+        window.minV = min;
+        window.maxV = max;
 
         // Здесь вы можете использовать полученные значения min и max для дальнейшей обработки, например, отправки через API
     }); 
@@ -187,9 +187,6 @@
         const alfaButton = document.getElementById('alfaButton');
         const raifButton = document.getElementById('raifButton');
         
-        function toggleButton(button) {
-            button.classList.toggle('active');
-        }
         
         sberButton.addEventListener('click', () => toggleButton(sberButton));
         tinkButton.addEventListener('click', () => toggleButton(tinkButton));
