@@ -138,6 +138,8 @@
     window.Telegram.WebApp.MainButton.text = "Сохранить";
     window.Telegram.WebApp.expand();
     window.Telegram.WebApp.MainButton.show();
+    document.addEventListener('DOMContentLoaded', function() {
+            // Весь ваш JavaScript код
         
     // Депозит
     const depositRange = document.getElementById('depositRange');
@@ -294,6 +296,7 @@ function getActivatedCurrencies() {
     if (daiButton.classList.contains('active')) currencies.push('DAI');
     return currencies;
 }
+        });
     </script>
 </body>
 </html>
