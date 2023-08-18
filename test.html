@@ -297,13 +297,69 @@ baybitTButton.addEventListener('click', () => {
         window.Telegram.WebApp.onEvent('mainButtonClicked', saveNclose);
         
         function saveNclose() {
-        data = {
-            arb_range:[window.minV,window.maxV],
-            paytypes:[0,1,2]
-        };
-        window.Telegram.WebApp.sendData(JSON.stringify(data)); 
-        window.Telegram.WebApp.close();
-    }
+    const data = {
+        arb_range: getArbRangeValues(),
+        paytypes: getActivatedPaytypes(),
+        mt_list: getActivatedMTList(),
+        marketlist: getActivatedMarketList()
+    };
+
+    sendDataToBot(data);
+    closeWebApp();
+}
+
+function getArbRangeValues() {
+    const min = Math.floor(depositRange.noUiSlider.get()[0]);
+    const max = Math.floor(depositRange.noUiSlider.get()[1]);
+    return [min, max];
+}
+
+function getActivatedPaytypes() {
+    const paytypes = [];
+    if (sberButton.classList.contains('active')) paytypes.push(0);
+    if (tinkButton.classList.contains('active')) paytypes.push(1);
+    if (raifButton.classList.contains('active')) paytypes.push(2);
+    if (alfaButton.classList.contains('active')) paytypes.push(3);
+    return paytypes;
+}
+
+function getActivatedMTList() {
+    const mtList = {};
+    if (binanceButton.classList.contains('active')) mtList['bin'] = getActivatedChildButtons(binanceMButton, binanceTButton);
+    if (garantexButton.classList.contains('active')) mtList['gar'] = getActivatedChildButtons(); // Пустой массив, так как нет дочерних кнопок
+    if (huobiButton.classList.contains('active')) mtList['huo'] = getActivatedChildButtons(huobiMButton, huobiTButton);
+    if (baybitButton.classList.contains('active')) mtList['byb'] = getActivatedChildButtons(baybitMButton, baybitTButton);
+    return mtList;
+}
+
+function getActivatedChildButtons(childMButton, childTButton) {
+    const childButtons = [];
+    if (childMButton.classList.contains('active')) childButtons.push('m');
+    if (childTButton.classList.contains('active')) childButtons.push('t');
+    return childButtons;
+}
+
+function getActivatedMarketList() {
+    const marketList = {};
+    if (binanceButton.classList.contains('active')) marketList['bin'] = getActivatedCurrencies();
+    if (garantexButton.classList.contains('active')) marketList['gar'] = getActivatedCurrencies();
+    if (huobiButton.classList.contains('active')) marketList['huo'] = getActivatedCurrencies();
+    if (baybitButton.classList.contains('active')) marketList['byb'] = getActivatedCurrencies();
+    return marketList;
+}
+
+function getActivatedCurrencies() {
+    const currencies = [];
+    if (btcButton.classList.contains('active')) currencies.push('BTC');
+    if (usdtButton.classList.contains('active')) currencies.push('USDT');
+    if (busdButton.classList.contains('active')) currencies.push('BUSD');
+    if (bnbButton.classList.contains('active')) currencies.push('BNB');
+    if (ethButton.classList.contains('active')) currencies.push('ETH');
+    if (usdcButton.classList.contains('active')) currencies.push('USDC');
+    if (daiButton.classList.contains('active')) currencies.push('DAI');
+    return currencies;
+}
+ 
     </script>
 </body>
 </html>
