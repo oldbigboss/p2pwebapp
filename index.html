@@ -354,7 +354,7 @@ function getActivatedPaytypes() {
 function getActivatedMTList() {
     const mtList = {};
     if (binanceButton.classList.contains('active')) mtList['bin'] = getActivatedChildButtons(binanceMButton, binanceTButton);
-    if (garantexButton.classList.contains('active')) mtList['gar'] = getActivatedChildButtons(); // Пустой массив, так как нет дочерних кнопок
+    if (garantexButton.classList.contains('active')) mtList['gar'] = []; // Пустой массив, так как нет дочерних кнопок
     if (huobiButton.classList.contains('active')) mtList['huo'] = getActivatedChildButtons(huobiMButton, huobiTButton);
     if (baybitButton.classList.contains('active')) mtList['byb'] = getActivatedChildButtons(baybitMButton, baybitTButton);
     return mtList;
