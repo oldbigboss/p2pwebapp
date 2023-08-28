@@ -149,6 +149,41 @@
     const depositRange = document.getElementById('depositRange');
     const minValue = document.getElementById('minValue');
     const maxValue = document.getElementById('maxValue');
+ 
+    document.addEventListener('DOMContentLoaded', function () {
+        const data = JSON.parse('{{ data|safe }}');
+
+        // Активация кнопок
+        const activateButtons = (buttonIds) => {
+            buttonIds.forEach((buttonId) => {
+                const button = document.getElementById(buttonId);
+                if (button) {
+                    button.classList.add('active');
+                }
+            });
+        };
+
+        // Активируем кнопки платежных методов
+        activateButtons(data.paytypes.map((index) => ['sberButton', 'tinkButton', 'alfaButton', 'raifButton'][index]));
+
+         // Активируем кнопки бирж и их дочерние кнопки
+         Object.keys(data.mt_list).forEach((marketKey) => {
+            const childButtons = data.mt_list[marketKey];
+            activateButtons([`${marketKey}Button`, ...childButtons.map((childType) => `${marketKey}${childType}Button`)]);
+        });
+
+        // Активируем кнопки криптовалют
+        const lowercaseMarketlist = data.marketlist.map(currency => currency.toLowerCase());
+
+        activateButtons(lowercaseMarketlist.map((currency) => `${currency}Button`));
+
+        // Установим значения диапазона ползунка
+        const depositRange = document.getElementById('depositRange');
+        depositRange.noUiSlider.set(data.arb_range);
+
+         
+    }); 
+
 
     noUiSlider.create(depositRange, {
         start: [10000, 750000],
@@ -188,10 +223,7 @@
         const alfaButton = document.getElementById('alfaButton');
         const raifButton = document.getElementById('raifButton');
         
-        function toggleButton(button) {
-            button.classList.toggle('active');
-        }
-        
+ 
         sberButton.addEventListener('click', () => toggleButton(sberButton));
         tinkButton.addEventListener('click', () => toggleButton(tinkButton));
         alfaButton.addEventListener('click', () => toggleButton(alfaButton));
