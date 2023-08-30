@@ -177,9 +177,12 @@
                 <div class="icon">✔️</div>
             </div>
         </div>
-    </div>
+    </div> 
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.3/nouislider.min.js"></script>
     <script>
+const saveAndCloseButton = document.getElementById('saveAndCloseButton');
+ 
     window.Telegram.WebApp.MainButton.text = "Сохранить";
     window.Telegram.WebApp.expand();
     window.Telegram.WebApp.MainButton.show();
@@ -191,7 +194,8 @@
     const depositRange = document.getElementById('depositRange');
     const minValue = document.getElementById('minValue');
     const maxValue = document.getElementById('maxValue');
-    
+    const blacklist = [];
+
     noUiSlider.create(depositRange, {
         start: [10000, 750000],
         connect: true,
@@ -353,6 +357,11 @@ baybitTButton.addEventListener('click', () => {
         window.Telegram.WebApp.close();
     }
         
+// Функция для получения списка черного списка
+function getBlacklist() {
+        return blacklist;
+    }
+
 function getActivatedPaytypes() {
     const paytypes = [];
     if (sberButton.classList.contains('active')) paytypes.push(0);
@@ -399,7 +408,7 @@ try {
 } catch (error) {
     console.error('Error parsing JSON:', error);
 } 
-    const blacklist = [];
+    
     if (data.blacklist && Array.isArray(data.blacklist)) {
     blacklist.push(...data.blacklist);
 }
@@ -522,10 +531,7 @@ containersDiv.addEventListener('click', (event) => {
 });
  
 
-    // Функция для получения списка черного списка
-    function getBlacklist() {
-        return blacklist;
-    }
+    
 });
 
         
