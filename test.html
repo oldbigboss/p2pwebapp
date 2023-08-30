@@ -1,41 +1,528 @@
-from aiohttp import web
-import aiohttp_jinja2
-import jinja2
-import json
-from database import get_user_raw_settings
-
-app = web.Application()
-aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('site\\templates')) 
-
-async def index(request):
-    tgid =  request.rel_url.query['id']
-    # data = {
-    #     'arb_range': [10000, 500000],
-    #     'paytypes': [0, 1, 3],
-    #     'mt_list': {'bin': ['m'], 'gar': [], 'huo': ['m', 't'], 'byb': ['t']},
-    #     'marketlist': ['BTC', 'BUSD', 'BNB', 'USDC', 'ETH', 'DAI'], 
-    #     'blacklist': ['rrr','dfdsc']
-    # }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale-1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="MobileOptimized" content="176" />
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="robots" content="noindex,nofollow" />
     
-    def prepare_data(data):
-        exchange_key_mapping = {
-            'bin': 'binance',
-            'huo': 'huobi',
-            'byb': 'baybit',
-            'gar': 'garantex'
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>Настройки</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.3/nouislider.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@200;500&display=swap'); 
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--tg-theme-text-color);
+            background: var(--tg-theme-secondary-bg-color);
+        }
+        .block {
+            margin-bottom: 10px;
+            padding: 10px; 
+            border: 0px; 
+            background: var(--tg-theme-bg-color);
+            border-radius: 4px;
+        }
+        h1 {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        h2 {
+            font-size: 22px;
+            margin-top: 0px;
+            margin-bottom: 10px;
+        }
+        .buttons-container {
+            display: flex; 
+            flex-wrap: wrap;
+        }
+        .button {
+            padding: 8px 16px;
+            margin: 4px;
+            border: none; 
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 500ms ease;
+            background: var(--tg-theme-secondary-bg-color);
+            color: var(--tg-theme-button-text-color);
+        }
+        .button.active{
+        background: var(--tg-theme-button-color);
+        }
+        .slider-container {
+            margin-top: 5px;
+        }
+        input[type="range"] {
+            width: 100%;
+        }
+        .range-values {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin: 5px; 
+        }
+        #depositRange {
+            width: 85%;
+            margin: 0 auto;
         } 
-        new_mt_list = {}
-        for key, value in data['mt_list'].items():
-            new_key = exchange_key_mapping.get(key, key)
-            new_value = [item.upper() for item in value]
-            new_mt_list[new_key] = new_value
+        .containers {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 200px;
+            padding: 5px;
+            border-radius: 8px;
+            margin: 5px;
+            background-color: var(--tg-theme-button-color);
+            transition: all 0.3s ease-in-out;
+            color: var(--tg-theme-button-text-color);
+        }
+        .container input[type="text"],
+        .container .text {
+            flex: 1;
+            margin-right: 5px;
+            border: none;
+            padding: 3px;
+            border-radius: 5px;
+        }
+        .container .icon {
+            cursor: pointer;
+            border-radius: 70%;
+            padding: 5px;
+            background-color:var(--tg-theme-secondary-bg-color);
+        }
+        .container .delete-icon {
+            background-color:var(--tg-theme-secondary-bg-color);
+        }
+    </style>
+</head>
+<body>
+    <h1>Настройки</h1>
+    
+    <div class="block">
+        <h2>Депозит</h2>
+        <div class="slider-container">
+            <div id="depositRange"></div>
+            <div class="range-values">
+                <span id="minValue">10000</span>
+                <span id="maxValue">750000</span>
+            </div>
+        </div>
+    </div>
 
-        data['mt_list'] = new_mt_list
+    
+    <div class="block">
+        <h2>Платежные методы</h2>
+        <div class="buttons-container">
+            <button class="button" id="sberButton">Сбер</button>
+            <button class="button" id="tinkButton">Тиньк</button>
+            <button class="button" id="alfaButton">Альфа</button>
+            <button class="button" id="raifButton">Райф</button>
+        </div>
+    </div>
+    
+    <div class="block">
+        <h2>Биржи</h2>
+        <div class="buttons-container">
+            <div>
+                <button class="button" id="binanceButton">Бинанс</button>
+                <div class="buttons-container">
+                    <button class="button" id="binanceMButton">М</button>
+                    <button class="button" id="binanceTButton">Т</button>
+                </div>
+            </div>
+            <div>
+                <button class="button" id="huobiButton">Хуоби</button>
+                <div class="buttons-container">
+                    <button class="button" id="huobiMButton">М</button>
+                    <button class="button" id="huobiTButton">Т</button>
+                </div>
+            </div>
+            <div>
+                <button class="button" id="baybitButton">Байбит</button>
+                <div class="buttons-container">
+                    <button class="button" id="baybitMButton">М</button>
+                    <button class="button" id="baybitTButton">Т</button>
+                </div>
+            </div>
+            <div>
+                <button class="button" id="garantexButton">Гарантекс</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="block">
+        <h2>Криптовалюты</h2>
+        <div class="buttons-container">
+            <button class="button" id="btcButton">BTC</button>
+            <button class="button" id="usdtButton">USDT</button>
+            <button class="button" id="busdButton">BUSD</button>
+            <button class="button" id="bnbButton">BNB</button>
+            <button class="button" id="ethButton">ETH</button>
+            <button class="button" id="usdcButton">USDC</button>
+            <button class="button" id="daiButton">DAI</button>
+        </div>
+    </div> 
+    <div class="block">
+        <h2>Черный список</h2>
+        <div class="containers"> 
+            <div class="container input-container">
+                <input type="text" placeholder="Введите имя пользователя" class="text">
+                <div class="icon">✔️</div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.3/nouislider.min.js"></script>
+    <script>
+    window.Telegram.WebApp.MainButton.text = "Сохранить";
+    window.Telegram.WebApp.expand();
+    window.Telegram.WebApp.MainButton.show();
+    
+    let minV = 10000;
+    let maxV = 750000;
+        
+    // Депозит
+    const depositRange = document.getElementById('depositRange');
+    const minValue = document.getElementById('minValue');
+    const maxValue = document.getElementById('maxValue');
+    
+    noUiSlider.create(depositRange, {
+        start: [10000, 750000],
+        connect: true,
+        range: {
+            'min': 10000,
+            'max': 750000
+        },
+        step: 1000
+    });
 
-        return data
-    data = get_user_raw_settings(tgid)
-    prepared_data = prepare_data(data) 
-    return aiohttp_jinja2.render_template('test.html', request, {'data': json.dumps(prepared_data)})
+    function formatNumber(number) {
+        return new Intl.NumberFormat('ru-RU').format(number);
+    }
 
-app.router.add_get('/', index)
-web.run_app(app, host='127.0.0.1', port=8000) 
+    depositRange.noUiSlider.on('update', (values) => {
+        const min = Math.floor(values[0]);
+        const max = Math.floor(values[1]);
+
+        minValue.textContent = formatNumber(min) + '₽';
+        maxValue.textContent = formatNumber(max) + '₽';
+
+               window.minV = min;
+        window.maxV = max;
+    });
+    depositRange.noUiSlider.on('change', (values) => {
+        const min = Math.floor(values[0]);
+        const max = Math.floor(values[1]);
+        window.minV = min;
+        window.maxV = max;
+
+        // Здесь вы можете использовать полученные значения min и max для дальнейшей обработки, например, отправки через API
+    }); 
+
+
+        
+        // Платежные методы
+        const sberButton = document.getElementById('sberButton');
+        const tinkButton = document.getElementById('tinkButton');
+        const alfaButton = document.getElementById('alfaButton');
+        const raifButton = document.getElementById('raifButton');
+        
+ 
+        sberButton.addEventListener('click', () => toggleButton(sberButton));
+        tinkButton.addEventListener('click', () => toggleButton(tinkButton));
+        alfaButton.addEventListener('click', () => toggleButton(alfaButton));
+        raifButton.addEventListener('click', () => toggleButton(raifButton));
+        
+        // Биржи
+        // Биржи
+const binanceButton = document.getElementById('binanceButton');
+const huobiButton = document.getElementById('huobiButton');
+const baybitButton = document.getElementById('baybitButton');
+const garantexButton = document.getElementById('garantexButton');
+
+const binanceMButton = document.getElementById('binanceMButton');
+const binanceTButton = document.getElementById('binanceTButton');
+const huobiMButton = document.getElementById('huobiMButton');
+const huobiTButton = document.getElementById('huobiTButton');
+const baybitMButton = document.getElementById('baybitMButton');
+const baybitTButton = document.getElementById('baybitTButton');
+
+function toggleButton(button) {
+    button.classList.toggle('active');
+}
+
+function syncChildButtons(mainButton, childMButton, childTButton) {
+    if (mainButton.classList.contains('active')) {
+        childMButton.classList.add('active');
+        childTButton.classList.add('active');
+    } else {
+        childMButton.classList.remove('active');
+        childTButton.classList.remove('active');
+    }
+}
+
+function syncMainButton(mainButton, childMButton, childTButton) {
+    if (childMButton.classList.contains('active') || childTButton.classList.contains('active')) {
+        mainButton.classList.add('active');
+    } else {
+        mainButton.classList.remove('active');
+    }
+}
+garantexButton.addEventListener('click', () => toggleButton(garantexButton));
+binanceButton.addEventListener('click', () => {
+    toggleButton(binanceButton);
+    syncChildButtons(binanceButton, binanceMButton, binanceTButton);
+});
+
+huobiButton.addEventListener('click', () => {
+    toggleButton(huobiButton);
+    syncChildButtons(huobiButton, huobiMButton, huobiTButton);
+});
+
+baybitButton.addEventListener('click', () => {
+    toggleButton(baybitButton);
+    syncChildButtons(baybitButton, baybitMButton, baybitTButton);
+});
+
+binanceMButton.addEventListener('click', () => {
+    toggleButton(binanceMButton);
+    syncMainButton(binanceButton, binanceMButton, binanceTButton);
+});
+
+binanceTButton.addEventListener('click', () => {
+    toggleButton(binanceTButton);
+    syncMainButton(binanceButton, binanceMButton, binanceTButton);
+});
+
+huobiMButton.addEventListener('click', () => {
+    toggleButton(huobiMButton);
+    syncMainButton(huobiButton, huobiMButton, huobiTButton);
+});
+
+huobiTButton.addEventListener('click', () => {
+    toggleButton(huobiTButton);
+    syncMainButton(huobiButton, huobiMButton, huobiTButton);
+});
+
+baybitMButton.addEventListener('click', () => {
+    toggleButton(baybitMButton);
+    syncMainButton(baybitButton, baybitMButton, baybitTButton);
+});
+
+baybitTButton.addEventListener('click', () => {
+    toggleButton(baybitTButton);
+    syncMainButton(baybitButton, baybitMButton, baybitTButton);
+});
+
+        
+        // Криптовалюты
+        const btcButton = document.getElementById('btcButton');
+        const usdtButton = document.getElementById('usdtButton');
+        const busdButton = document.getElementById('busdButton');
+        const bnbButton = document.getElementById('bnbButton');
+        const ethButton = document.getElementById('ethButton');
+        const usdcButton = document.getElementById('usdcButton');
+        const daiButton = document.getElementById('daiButton');
+        
+        btcButton.addEventListener('click', () => toggleButton(btcButton));
+        usdtButton.addEventListener('click', () => toggleButton(usdtButton));
+        busdButton.addEventListener('click', () => toggleButton(busdButton));
+        bnbButton.addEventListener('click', () => toggleButton(bnbButton));
+        ethButton.addEventListener('click', () => toggleButton(ethButton));
+        usdcButton.addEventListener('click', () => toggleButton(usdcButton));
+        daiButton.addEventListener('click', () => toggleButton(daiButton));
+        
+        // отправка
+        window.Telegram.WebApp.onEvent('mainButtonClicked', saveNclose);
+        
+        function saveNclose() {
+        data = {
+            arb_range:[window.minV,window.maxV],
+            paytypes: getActivatedPaytypes(),
+            mt_list: getActivatedMTList(),
+            marketlist: getActivatedCurrencies(),
+            blacklist: getBlacklist()
+        };
+        window.Telegram.WebApp.sendData(JSON.stringify(data)); 
+        window.Telegram.WebApp.close();
+    }
+        
+function getActivatedPaytypes() {
+    const paytypes = [];
+    if (sberButton.classList.contains('active')) paytypes.push(0);
+    if (tinkButton.classList.contains('active')) paytypes.push(1);
+    if (raifButton.classList.contains('active')) paytypes.push(2);
+    if (alfaButton.classList.contains('active')) paytypes.push(3);
+    return paytypes;
+}
+
+function getActivatedMTList() {
+    const mtList = {};
+    if (binanceButton.classList.contains('active')) mtList['bin'] = getActivatedChildButtons(binanceMButton, binanceTButton);
+    if (garantexButton.classList.contains('active')) mtList['gar'] = []; // Пустой массив, так как нет дочерних кнопок
+    if (huobiButton.classList.contains('active')) mtList['huo'] = getActivatedChildButtons(huobiMButton, huobiTButton);
+    if (baybitButton.classList.contains('active')) mtList['byb'] = getActivatedChildButtons(baybitMButton, baybitTButton);
+    return mtList;
+}
+
+function getActivatedChildButtons(childMButton, childTButton) {
+    const childButtons = [];
+    if (childMButton.classList.contains('active')) childButtons.push('m');
+    if (childTButton.classList.contains('active')) childButtons.push('t');
+    return childButtons;
+}
+ 
+function getActivatedCurrencies() {
+    const currencies = [];
+    if (btcButton.classList.contains('active')) currencies.push('BTC');
+    if (usdtButton.classList.contains('active')) currencies.push('USDT');
+    if (busdButton.classList.contains('active')) currencies.push('BUSD');
+    if (bnbButton.classList.contains('active')) currencies.push('BNB');
+    if (ethButton.classList.contains('active')) currencies.push('ETH');
+    if (usdcButton.classList.contains('active')) currencies.push('USDC');
+    if (daiButton.classList.contains('active')) currencies.push('DAI');
+    return currencies;
+} 
+
+document.addEventListener('DOMContentLoaded', function () {
+    const containersDiv = document.querySelector('.containers'); 
+    const data = JSON.parse('{{ data|safe }}');
+    const blacklist = [];
+    if (data.blacklist && Array.isArray(data.blacklist)) {
+    blacklist.push(...data.blacklist);
+}
+    // Активация кнопок
+    const activateButtons = (buttonIds) => {
+        buttonIds.forEach((buttonId) => {
+            const button = document.getElementById(buttonId);
+            if (button) {
+                button.classList.add('active');
+            }
+        });
+    };
+
+    // Активация блеклист
+    if (data.blacklist && Array.isArray(data.blacklist)) {
+     
+    data.blacklist.forEach((username) => {
+            createFilledContainer(username)
+        }); 
+    }
+    if (data.paytypes) {
+    // Активируем кнопки платежных методов
+    activateButtons(data.paytypes.map((index) => ['sberButton', 'tinkButton', 'alfaButton', 'raifButton'][index]));
+    }
+
+    if (data.mt_list) {
+    // Активируем кнопки бирж и их дочерние кнопки
+    Object.keys(data.mt_list).forEach((marketKey) => {
+        const childButtons = data.mt_list[marketKey];
+        activateButtons([`${marketKey}Button`, ...childButtons.map((childType) => `${marketKey}${childType}Button`)]);
+    });
+    }
+    if (data.marketlist) {
+    // Активируем кнопки криптовалют
+    const lowercaseMarketlist = data.marketlist.map(currency => currency.toLowerCase());
+    activateButtons(lowercaseMarketlist.map((currency) => `${currency}Button`));
+    }
+    if (data.arb_range){
+    // Установим значения диапазона ползунка
+    const depositRange = document.getElementById('depositRange');
+    depositRange.noUiSlider.set(data.arb_range);
+    }
+    function createNewEmptyContainer() {
+                const newContainer = document.createElement('div');
+                newContainer.classList.add('container', 'input-container');
+
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.placeholder = 'Введите имя пользователя';
+                input.classList.add('text'); 
+
+                const iconSave = document.createElement('div');
+                iconSave.classList.add('icon');
+                iconSave.textContent = '✔️';
+
+                newContainer.appendChild(input);
+                newContainer.appendChild(iconSave);
+
+                containersDiv.insertBefore(newContainer, containersDiv.firstChild);
+            }
+            function replaceWithText(container, text) {
+                container.innerHTML = '';
+                container.classList.add('text-container');
+
+                const textElement = document.createElement('div');
+                textElement.classList.add('text');
+                textElement.textContent = text;
+
+                const deleteIcon = document.createElement('div');
+                deleteIcon.classList.add('icon', 'delete-icon');
+                deleteIcon.textContent = '❌';
+
+                container.appendChild(textElement);
+                container.appendChild(deleteIcon);
+ 
+            }
+            function createFilledContainer(text){
+                const newContainer = document.createElement('div');
+                newContainer.classList.add('container', 'text-container');
+
+                const textElement = document.createElement('div');
+                textElement.classList.add('text');
+                textElement.textContent = text;
+
+                const deleteIcon = document.createElement('div');
+                deleteIcon.classList.add('icon', 'delete-icon');
+                deleteIcon.textContent = '❌';
+
+                newContainer.appendChild(textElement);
+                newContainer.appendChild(deleteIcon);
+ 
+                containersDiv.appendChild(newContainer);
+            }
+    // Обработчик события клика на контейнеры черного списка
+containersDiv.addEventListener('click', (event) => {
+    const container = event.target.closest('.container');
+    if (!container) return;
+
+    const icon = event.target.closest('.icon');
+    const textContainer = container.classList.contains('text-container');
+
+    if (icon && !textContainer) {
+        const inputElement = container.querySelector('input.text');
+        const text = inputElement.value.trim();
+
+        if (text !== '') {
+            blacklist.push(text);
+            createNewEmptyContainer();
+            replaceWithText(container,text);
+        }
+    } else if (icon && textContainer) {
+        const textElement = container.querySelector('.text');
+        const text = textElement.textContent.trim();
+        const index = blacklist.indexOf(text);
+        if (index !== -1) {
+            blacklist.splice(index, 1);  // Удаляем из черного списка
+        } 
+        container.remove();
+    }
+});
+ 
+
+    // Функция для получения списка черного списка
+    function getBlacklist() {
+        return blacklist;
+    }
+});
+
+        
+    </script>
+</body>
+</html>
