@@ -48,8 +48,8 @@
             background: var(--tg-theme-secondary-bg-color);
             color: var(--tg-theme-button-text-color);
         }
-        .button.active {
-        background-color: var(--tg-theme-button-color); /* Активный цвет кнопки */
+        .button.active{
+        background: var(--tg-theme-button-color);
         }
         .slider-container {
             margin-top: 5px;
@@ -66,6 +66,39 @@
         #depositRange {
             width: 85%;
             margin: 0 auto;
+        } 
+        .containers {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 200px;
+            padding: 5px;
+            border-radius: 8px;
+            margin: 5px;
+            background-color: var(--tg-theme-button-color);
+            transition: all 0.3s ease-in-out;
+            color: var(--tg-theme-button-text-color);
+        }
+        .container input[type="text"],
+        .container .text {
+            flex: 1;
+            margin-right: 5px;
+            border: none;
+            padding: 3px;
+            border-radius: 5px;
+        }
+        .container .icon {
+            cursor: pointer;
+            border-radius: 40%;
+            padding: 5px;
+            background-color:var(--tg-theme-secondary-bg-color);
+        }
+        .container .delete-icon {
+            background-color:var(--tg-theme-secondary-bg-color);
         }
     </style>
 </head>
@@ -135,18 +168,30 @@
             <button class="button" id="usdcButton">USDC</button>
             <button class="button" id="daiButton">DAI</button>
         </div>
+    </div> 
+    <div class="block">
+        <h2>Черный список</h2>
+        <div class="containers"> 
+            <div class="container input-container">
+                <input type="text" placeholder="Введите имя пользователя" class="text">
+                <div class="icon">✔️</div>
+            </div>
+        </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.3/nouislider.min.js"></script>
     <script>
     window.Telegram.WebApp.MainButton.text = "Сохранить";
     window.Telegram.WebApp.expand();
     window.Telegram.WebApp.MainButton.show();
+    
+    let minV = 10000;
+    let maxV = 750000;
         
     // Депозит
     const depositRange = document.getElementById('depositRange');
     const minValue = document.getElementById('minValue');
     const maxValue = document.getElementById('maxValue');
-
+    
     noUiSlider.create(depositRange, {
         start: [10000, 750000],
         connect: true,
@@ -167,9 +212,10 @@
 
         minValue.textContent = formatNumber(min) + '₽';
         maxValue.textContent = formatNumber(max) + '₽';
+
+               window.minV = min;
+        window.maxV = max;
     });
-    let minV = 0;
-    let maxV = 0;
     depositRange.noUiSlider.on('change', (values) => {
         const min = Math.floor(values[0]);
         const max = Math.floor(values[1]);
@@ -187,13 +233,13 @@
         const alfaButton = document.getElementById('alfaButton');
         const raifButton = document.getElementById('raifButton');
         
-        
+ 
         sberButton.addEventListener('click', () => toggleButton(sberButton));
         tinkButton.addEventListener('click', () => toggleButton(tinkButton));
         alfaButton.addEventListener('click', () => toggleButton(alfaButton));
         raifButton.addEventListener('click', () => toggleButton(raifButton));
         
-         
+        // Биржи
         // Биржи
 const binanceButton = document.getElementById('binanceButton');
 const huobiButton = document.getElementById('huobiButton');
@@ -206,7 +252,6 @@ const huobiMButton = document.getElementById('huobiMButton');
 const huobiTButton = document.getElementById('huobiTButton');
 const baybitMButton = document.getElementById('baybitMButton');
 const baybitTButton = document.getElementById('baybitTButton');
-garantexButton.addEventListener('click', () => toggleButton(garantexButton));
 
 function toggleButton(button) {
     button.classList.toggle('active');
@@ -229,7 +274,7 @@ function syncMainButton(mainButton, childMButton, childTButton) {
         mainButton.classList.remove('active');
     }
 }
-
+garantexButton.addEventListener('click', () => toggleButton(garantexButton));
 binanceButton.addEventListener('click', () => {
     toggleButton(binanceButton);
     syncChildButtons(binanceButton, binanceMButton, binanceTButton);
@@ -293,31 +338,20 @@ baybitTButton.addEventListener('click', () => {
         usdcButton.addEventListener('click', () => toggleButton(usdcButton));
         daiButton.addEventListener('click', () => toggleButton(daiButton));
         
-        // отправка 
+        // отправка
+        window.Telegram.WebApp.onEvent('mainButtonClicked', saveNclose);
         
-function saveNclose() {
-    const data = {
-        arb_range: getArbRangeValues(),
-        paytypes: getActivatedPaytypes(),
-        mt_list: getActivatedMTList(),
-        marketlist: getActivatedMarketList()
-    };
-
-    sendDataToBot(data);
-    closeWebApp();
-}
-
-         function kekNclose() {
-             window.Telegram.WebApp.close()
+        function saveNclose() {
+        data = {
+            arb_range:[window.minV,window.maxV],
+            paytypes: getActivatedPaytypes(),
+            mt_list: getActivatedMTList(),
+            marketlist: getActivatedCurrencies()
+        };
+        window.Telegram.WebApp.sendData(JSON.stringify(data)); 
+        window.Telegram.WebApp.close();
     }
-window.Telegram.WebApp.onEvent('mainButtonClicked', kekNclose());
-
-function getArbRangeValues() {
-    const min = Math.floor(depositRange.noUiSlider.get()[0]);
-    const max = Math.floor(depositRange.noUiSlider.get()[1]);
-    return [min, max];
-}
-
+        
 function getActivatedPaytypes() {
     const paytypes = [];
     if (sberButton.classList.contains('active')) paytypes.push(0);
@@ -330,7 +364,7 @@ function getActivatedPaytypes() {
 function getActivatedMTList() {
     const mtList = {};
     if (binanceButton.classList.contains('active')) mtList['bin'] = getActivatedChildButtons(binanceMButton, binanceTButton);
-    if (garantexButton.classList.contains('active')) mtList['gar'] = getActivatedChildButtons(); // Пустой массив, так как нет дочерних кнопок
+    if (garantexButton.classList.contains('active')) mtList['gar'] = []; // Пустой массив, так как нет дочерних кнопок
     if (huobiButton.classList.contains('active')) mtList['huo'] = getActivatedChildButtons(huobiMButton, huobiTButton);
     if (baybitButton.classList.contains('active')) mtList['byb'] = getActivatedChildButtons(baybitMButton, baybitTButton);
     return mtList;
@@ -342,16 +376,7 @@ function getActivatedChildButtons(childMButton, childTButton) {
     if (childTButton.classList.contains('active')) childButtons.push('t');
     return childButtons;
 }
-
-function getActivatedMarketList() {
-    const marketList = {};
-    if (binanceButton.classList.contains('active')) marketList['bin'] = getActivatedCurrencies();
-    if (garantexButton.classList.contains('active')) marketList['gar'] = getActivatedCurrencies();
-    if (huobiButton.classList.contains('active')) marketList['huo'] = getActivatedCurrencies();
-    if (baybitButton.classList.contains('active')) marketList['byb'] = getActivatedCurrencies();
-    return marketList;
-}
-
+ 
 function getActivatedCurrencies() {
     const currencies = [];
     if (btcButton.classList.contains('active')) currencies.push('BTC');
@@ -362,8 +387,133 @@ function getActivatedCurrencies() {
     if (usdcButton.classList.contains('active')) currencies.push('USDC');
     if (daiButton.classList.contains('active')) currencies.push('DAI');
     return currencies;
-}
+} 
+
+document.addEventListener('DOMContentLoaded', function () {
+    const containersDiv = document.querySelector('.containers'); 
+    const data = JSON.parse('{{ data|safe }}');
+    const blacklist = data.blacklist;
+
+    // Активация кнопок
+    const activateButtons = (buttonIds) => {
+        buttonIds.forEach((buttonId) => {
+            const button = document.getElementById(buttonId);
+            if (button) {
+                button.classList.add('active');
+            }
+        });
+    };
+
+    // Активация блеклист
+     
+        data.blacklist.forEach((username) => {
+            createFilledContainer(username)
+        }); 
+
+    // Активируем кнопки платежных методов
+    activateButtons(data.paytypes.map((index) => ['sberButton', 'tinkButton', 'alfaButton', 'raifButton'][index]));
+
+    // Активируем кнопки бирж и их дочерние кнопки
+    Object.keys(data.mt_list).forEach((marketKey) => {
+        const childButtons = data.mt_list[marketKey];
+        activateButtons([`${marketKey}Button`, ...childButtons.map((childType) => `${marketKey}${childType}Button`)]);
+    });
+
+    // Активируем кнопки криптовалют
+    const lowercaseMarketlist = data.marketlist.map(currency => currency.toLowerCase());
+    activateButtons(lowercaseMarketlist.map((currency) => `${currency}Button`));
+
+    // Установим значения диапазона ползунка
+    const depositRange = document.getElementById('depositRange');
+    depositRange.noUiSlider.set(data.arb_range);
+
+    function createNewEmptyContainer() {
+                const newContainer = document.createElement('div');
+                newContainer.classList.add('container', 'input-container');
+
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.placeholder = 'Введите имя пользователя';
+                input.classList.add('text'); 
+
+                const iconSave = document.createElement('div');
+                iconSave.classList.add('icon');
+                iconSave.textContent = '✔️';
+
+                newContainer.appendChild(input);
+                newContainer.appendChild(iconSave);
+
+                containersDiv.insertBefore(newContainer, containersDiv.firstChild);
+            }
+            function replaceWithText(container, text) {
+                container.innerHTML = '';
+                container.classList.add('text-container');
+
+                const textElement = document.createElement('div');
+                textElement.classList.add('text');
+                textElement.textContent = text;
+
+                const deleteIcon = document.createElement('div');
+                deleteIcon.classList.add('icon', 'delete-icon');
+                deleteIcon.textContent = '❌';
+
+                container.appendChild(textElement);
+                container.appendChild(deleteIcon);
  
+            }
+            function createFilledContainer(text){
+                const newContainer = document.createElement('div');
+                newContainer.classList.add('container', 'text-container');
+
+                const textElement = document.createElement('div');
+                textElement.classList.add('text');
+                textElement.textContent = text;
+
+                const deleteIcon = document.createElement('div');
+                deleteIcon.classList.add('icon', 'delete-icon');
+                deleteIcon.textContent = '❌';
+
+                newContainer.appendChild(textElement);
+                newContainer.appendChild(deleteIcon);
+ 
+                containersDiv.appendChild(newContainer);
+            }
+    // Обработчик события клика на контейнеры черного списка
+containersDiv.addEventListener('click', (event) => {
+    const container = event.target.closest('.container');
+    if (!container) return;
+
+    const icon = event.target.closest('.icon');
+    const textContainer = container.classList.contains('text-container');
+
+    if (icon && !textContainer) {
+        const inputElement = container.querySelector('input.text');
+        const text = inputElement.value.trim();
+
+        if (text !== '') {
+            blacklist.push(text);
+            createNewEmptyContainer();
+            replaceWithText(container,text);
+        }
+    } else if (icon && textContainer) {
+        const textElement = container.querySelector('.text');
+        const text = textElement.textContent.trim();
+        const index = blacklist.indexOf(text);
+        if (index !== -1) {
+            blacklist.splice(index, 1);  // Удаляем из черного списка
+        } 
+        container.remove();
+    }
+});
+ 
+
+    // Функция для получения списка черного списка
+    function getBlacklist() {
+        return blacklist;
+    }
+});
+
+        
     </script>
 </body>
 </html>
