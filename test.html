@@ -75,7 +75,6 @@
             position: relative;
             display: flex;
             align-items: center;
-            width: 200px;
             padding: 5px;
             border-radius: 8px;
             margin: 5px;
@@ -83,13 +82,16 @@
             transition: all 0.3s ease-in-out;
             color: var(--tg-theme-button-text-color);
         }
-        .container input[type="text"],
+        .container input[type="text"]{
+            width: 170px;
+        }
         .container .text {
             flex: 1;
             margin-right: 5px;
             border: none;
             padding: 3px;
             border-radius: 5px;
+            max-width: 190px;
         }
         .container .icon {
             cursor: pointer;
@@ -483,7 +485,12 @@ try {
 
                 container.appendChild(textElement);
                 container.appendChild(deleteIcon);
- 
+ // Установка ширины контейнера в зависимости от длины текста
+ const textWidth = textElement.clientWidth;
+    const iconWidth = deleteIcon.clientWidth;
+    const totalWidth = textWidth + iconWidth + 10; // Дополнительный отступ
+
+    container.style.width = `${Math.min(totalWidth, 200)}px`;
             }
             function createFilledContainer(text){
                 const newContainer = document.createElement('div');
@@ -501,6 +508,12 @@ try {
                 newContainer.appendChild(deleteIcon);
  
                 containersDiv.appendChild(newContainer);
+                // Установка ширины контейнера в зависимости от длины текста
+    const textWidth = textElement.clientWidth;
+    const iconWidth = deleteIcon.clientWidth;
+    const totalWidth = textWidth + iconWidth + 10; // Дополнительный отступ
+
+    container.style.width = `${Math.min(totalWidth, 200)}px`;
             }
     // Обработчик события клика на контейнеры черного списка
 containersDiv.addEventListener('click', (event) => {
