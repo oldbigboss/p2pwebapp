@@ -393,8 +393,10 @@ function getActivatedCurrencies() {
 document.addEventListener('DOMContentLoaded', function () {
     const containersDiv = document.querySelector('.containers'); 
     const data = JSON.parse('{{ data|safe }}');
-    const blacklist = data.blacklist;
-
+    const blacklist = [];
+    if (data.blacklist && Array.isArray(data.blacklist)) {
+    blacklist.push(...data.blacklist);
+}
     // Активация кнопок
     const activateButtons = (buttonIds) => {
         buttonIds.forEach((buttonId) => {
