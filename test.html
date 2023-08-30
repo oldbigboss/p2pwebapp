@@ -392,7 +392,13 @@ function getActivatedCurrencies() {
 
 document.addEventListener('DOMContentLoaded', function () {
     const containersDiv = document.querySelector('.containers'); 
-    const data = JSON.parse('{{ data|safe }}');
+    let data = {};
+
+try {
+    data = JSON.parse('{{ data|safe }}');
+} catch (error) {
+    console.error('Error parsing JSON:', error);
+} 
     const blacklist = [];
     if (data.blacklist && Array.isArray(data.blacklist)) {
     blacklist.push(...data.blacklist);
