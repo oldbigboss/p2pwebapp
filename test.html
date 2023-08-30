@@ -408,10 +408,10 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     // Активация блеклист
-     if (data.blacklist && Array.isArray(data.blacklist)){
-        data.blacklist.forEach((username) => {
+     
+    data.blacklist.forEach((username) => {
             createFilledContainer(username)
-        }); }
+        }); 
 
     // Активируем кнопки платежных методов
     activateButtons(data.paytypes.map((index) => ['sberButton', 'tinkButton', 'alfaButton', 'raifButton'][index]));
